@@ -121,13 +121,11 @@ let rp = require('request-promise');
 
 function randomName(spec) {
   let {gender, region} = spec;
-
   let options = {
     uri: 'http://uinames.com/api/',
     qs: {amount: 1, gender, region},
     json: true,
   };
-
   return rp(options).then((responseText) => {return responseText.surname+", "+responseText.name});
 }
 
