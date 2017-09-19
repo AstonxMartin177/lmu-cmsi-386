@@ -3,9 +3,10 @@ function change (amount) {
     throw new RangeError("RangeError: amount cannot be negative");
   }
   const result = [];
-  let givenChange = amount;
+  let changeRemaining = amount;
   [25,10,5,1].forEach((coin) => {
-    result.push(Math.floor(givenChange / coin));
+    result.push(Math.floor(changeRemaining / coin));
+    changeRemaining -= coin * Math.floor(changeRemaining / coin);
   });
   return result;
 }
@@ -31,7 +32,7 @@ function scramble (sentence) {
  
 function powers (base, max, p) {
   let i = 0;
-  while(Math.pow(base, i) < max) {
+  while(Math.pow(base, i) <= max) {
     p(Math.pow(base, i));
     i++;
   }
@@ -39,6 +40,8 @@ function powers (base, max, p) {
  
 function cylinder (spec) {
   let {radius, height} = spec;
+  radius = (radius !== undefined)?radius:1;
+  height = (height !== undefined)?height:1;
   let volume = () => Math.PI * radius * radius * height;
   let surfaceArea = () => 2 * Math.PI * radius * height
     + 2 * Math.PI * radius * radius;
@@ -52,42 +55,42 @@ function cylinder (spec) {
 }
 
 const say = function(a){
-	let w;
-	if(a){
-		w = a
-		return z = function(b){
-			if(b){
-				w = w + " " + b
-				return z;
-			}
-			else{
-        return w;
-			}
-		}
-	}
-	else{
-		return w;
-	}
+  let holder;
+  if(a){
+    holder = a
+    return innerScreaming = function(b){
+      if(b){
+        holder = holder + " " + b
+        return innerScreaming;
+      }
+      else{
+        return holder;
+      }
+    }
+  }
+  else{
+    return '';
+  }
 }
 
 function* powersGenerator(base, max){
   let power = 0;
-	while(max > Math.pow(base, power)){
-		yield Math.pow(base, power);
-		power = power+1;
-	}
+  while(max >= Math.pow(base, power)){
+    yield Math.pow(base, power);
+    power = power+1;
+  }
 }
 
 function interleave(){
-	let args = Array.prototype.slice.call(arguments),
-		givenArray = args.shift(),
-		weaveArray = [];
-	givenArray.forEach(function(eachName, index){
-		weaveArray.push(eachName);
-		if(args.length > 0){
-			weaveArray.push(args.shift());
-		}
-	})
+  let args = Array.prototype.slice.call(arguments),
+    givenArray = args.shift(),
+    weaveArray = [];
+  givenArray.forEach(function(eachName, index){
+    weaveArray.push(eachName);
+    if(args.length > 0){
+      weaveArray.push(args.shift());
+    }
+  })
   if(args.length > 0){
     return weaveArray.concat(args);
   }
@@ -95,29 +98,39 @@ function interleave(){
 }
 
 function makeCryptoFunctions(key, algorithm){
-	const crypto = require('crypto');
+  const crypto = require('crypto');
 	
-	const encryptFunction = function(secret){
-		const cipher = crypto.createCipher(algorithm, key);
-		
-		let encrypted = cipher.update(secret, 'utf8', 'hex');
-		encrypted += cipher.final('hex');
-		return encrypted;
-	}
-	const decryptFunction = function(encrypted){
-		const decipher = crypto.createDecipher(algorithm, key);
-		
-		let decrypted = decipher.update(encrypted, 'hex', 'utf8');
-		decrypted += decipher.final('utf8');
-		return decrypted;
-	}
+  const encryptFunction = function(secret){
+    const cipher = crypto.createCipher(algorithm, key);
 	
-	return[encryptFunction, decryptFunction];
+    let encrypted = cipher.update(secret, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    return encrypted;
+  }
+  const decryptFunction = function(encrypted){
+    const decipher = crypto.createDecipher(algorithm, key);
+		
+    let decrypted = decipher.update(encrypted, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    return decrypted;
+  }
+  return[encryptFunction, decryptFunction];
 }
 
-function randomName(arg){
-	let {region, gender} = arg;
-	return $.getJSON("https://uinames.com/api/?amount=1&gender="+gender+"&region="+region+"").then((responseText) => {
-		return responseText.surname+", "+responseText.name;
-		});
+let rp = require('request-promise');
+
+function randomName(spec) {
+  let {gender, region} = spec;
+
+  let options = {
+    uri: 'http://uinames.com/api/',
+    qs: {amount: 1, gender, region},
+    json: true,
+  };
+
+  return rp(options).then((responseText) => {return responseText.surname+", "+responseText.name});
 }
+
+module.exports = {
+  change, stripQuotes, scramble, powers, powersGenerator, interleave, randomName, cylinder, say, makeCryptoFunctions
+};
