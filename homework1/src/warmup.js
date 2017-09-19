@@ -20,14 +20,17 @@ function stripQuotes (sentence) {
   return sentence;
 }
  
+
 function scramble (sentence) {
-  var scrambled = "";
-  var lengthOfString = sentence.length;
+  let scrambled = "";
+  let s = sentence;
+  let lengthOfString = sentence.length;
   for (let i = 0; i < lengthOfString; i++) {
-    var rand = Math.floor(Math.random() * sentence.length);
-    scrambled += sentence.substring(rand,rand+1);
-    sentence = sentence.substring(0,rand) + sentence.substring(rand+1);
+    let rand = Math.floor(Math.random() * s.length);
+    scrambled = scrambled + s.substring(rand,rand+1);
+    s = s.substring(0,rand) + s.substring(rand+1);
   }
+  return scrambled;
 }
  
 function powers (base, max, p) {
