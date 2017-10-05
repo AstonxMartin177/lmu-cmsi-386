@@ -1,4 +1,4 @@
-**CMSI 386** Interaction Design, Fall 2017
+**CMSI 386** Programming Languages, Fall 2017
 
 # Homework 1
 ## Supported Commands
